@@ -203,19 +203,29 @@ def handle_keys(realtime):
 		return True  #exit game
  
 	#movement keys
-	if user_input.key == 'UP':
+	if user_input.key == 'KP8':
 		player.move(0, -1)
  
-	elif user_input.key == 'DOWN':
+	elif user_input.key == 'KP2':
 		player.move(0, 1)
  
-	elif user_input.key == 'LEFT':
+	elif user_input.key == 'KP4':
 		player.move(-1, 0)
  
-	elif user_input.key == 'RIGHT':
+	elif user_input.key == 'KP6':
 		player.move(1, 0)
- 
- 
+
+	elif user_input.key == 'KP7':
+		player.move(-1, -1)
+	
+	elif user_input.key == 'KP9':
+		player.move(1, -1)
+	
+	elif user_input.key == 'KP1':
+		player.move(-1, 1)
+	
+	elif user_input.key == 'KP3':
+		player.move(1, 1)
 #############################################
 # Initialization & Main Loop				#
 #############################################
