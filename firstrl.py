@@ -220,7 +220,7 @@ def handle_keys(realtime):
 # Initialization & Main Loop				#
 #############################################
  
-tdl.set_font('terminal8x14_gs_ro.png', greyscale=True, altLayout=True)
+tdl.set_font('terminal8x14_gs_ro.png', greyscale=True, altLayout=False)
 root = tdl.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="Roguelike", fullscreen=False)
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(SCREEN_WIDTH, SCREEN_HEIGHT)
