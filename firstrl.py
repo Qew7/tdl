@@ -5,11 +5,11 @@ from random import randint
  
 #actual size of the window
 SCREEN_WIDTH = 150
-SCREEN_HEIGHT = 45
+SCREEN_HEIGHT = 50
  
 #size of the map
 MAP_WIDTH = 150
-MAP_HEIGHT = 50
+MAP_HEIGHT = 45
  
 #parameters for dungeon generator
 ROOM_MAX_SIZE = 10
