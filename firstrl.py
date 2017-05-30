@@ -20,8 +20,10 @@ REALTIME = False
 LIMIT_FPS = 20  #20 frames-per-second maximum
  
  
-color_dark_wall = (0, 0, 100)
+color_dark_wall = 0x400040
 color_dark_ground = (50, 50, 150)
+color_floor_background = 0x002809
+color_wall_foreground = 0x403000
  
  
 class Tile:
@@ -143,6 +145,12 @@ def make_map():
 			else:
 				#all rooms after the first:
 				#connect it to the previous room with a tunnel
+
+				#spawn npc in center of new room
+				if r < len(objects):
+					print('room #' + str(num_rooms))
+					objects[r].x = new_x
+					objects[r].y = new_y
  
 				#center coordinates of previous room
 				(prev_x, prev_y) = rooms[num_rooms-1].center()
@@ -169,9 +177,9 @@ def render_all():
 		for x in range(MAP_WIDTH):
 			wall = my_map[x][y].block_sight
 			if wall:
-				con.draw_char(x, y, None, fg=None, bg=color_dark_wall)
+				con.draw_char(x, y, '#', fg=color_wall_foreground, bg=color_dark_wall)
 			else:
-				con.draw_char(x, y, None, fg=None, bg=color_dark_ground)
+				con.draw_char(x, y, '.', fg=color_dark_ground, bg=color_floor_background)
  
 	#draw all objects in the list
 	for obj in objects:
@@ -181,7 +189,7 @@ def render_all():
 	root.blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0)
  
 def handle_keys(realtime):
-	global playerx, playery
+	# global playerx, playery
  
 	if realtime:
 		keypress = False
@@ -197,7 +205,7 @@ def handle_keys(realtime):
  
 	if user_input.key == 'ENTER' and user_input.alt:
 		#Alt+Enter: toggle fullscreen
-		tdl.set_fullscreen(True)
+		tdl.set_fullscreen(tdl.get_fullscreen())
  
 	elif user_input.key == 'ESCAPE':
 		return True  #exit game
@@ -234,15 +242,16 @@ tdl.set_font('terminal8x14_gs_ro.png', greyscale=True, altLayout=False)
 root = tdl.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="Roguelike", fullscreen=False)
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(SCREEN_WIDTH, SCREEN_HEIGHT)
- 
+
 #create object representing the player
 player = GameObject(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, '@', (255,255,255))
- 
-#create an NPC
-npc = GameObject(SCREEN_WIDTH//2 - 5, SCREEN_HEIGHT//2, '@', (255,255,0))
- 
+
 #the list of objects with those two
-objects = [npc, player]
+objects = [player]
+
+#create up to ten NPCs
+for i in range(1, randint(2,10)):
+	objects.append(GameObject(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, 'N', (randint(1,255),randint(1,255),randint(1,255))))
  
 #generate map (at this point it's not drawn to the screen)
 make_map()
