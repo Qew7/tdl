@@ -4,12 +4,12 @@ import tdl
 from random import randint
  
 #actual size of the window
-SCREEN_WIDTH = 150
-SCREEN_HEIGHT = 50
+SCREEN_WIDTH = 132
+SCREEN_HEIGHT = 40
  
 #size of the map
-MAP_WIDTH = 150
-MAP_HEIGHT = 45
+MAP_WIDTH = 132
+MAP_HEIGHT = 35
  
 #parameters for dungeon generator
 ROOM_MAX_SIZE = 10
@@ -177,9 +177,9 @@ def render_all():
 		for x in range(MAP_WIDTH):
 			wall = my_map[x][y].block_sight
 			if wall:
-				con.draw_char(x, y, '#', fg=color_wall_foreground, bg=color_dark_wall)
+				con.draw_char(x, y, 177, fg=color_wall_foreground, bg=color_dark_wall)
 			else:
-				con.draw_char(x, y, '.', fg=color_dark_ground, bg=color_floor_background)
+				con.draw_char(x, y, '.', fg=color_wall_foreground, bg=color_floor_background)
  
 	#draw all objects in the list
 	for obj in objects:
@@ -238,7 +238,7 @@ def handle_keys(realtime):
 # Initialization & Main Loop				#
 #############################################
  
-tdl.set_font('terminal8x14_gs_ro.png', greyscale=True, altLayout=False)
+tdl.set_font('terminal10x16_gs_ro.png', greyscale=True, altLayout=False)
 root = tdl.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="Roguelike", fullscreen=False)
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -250,8 +250,12 @@ player = GameObject(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, '@', (255,255,255))
 objects = [player]
 
 #create up to ten NPCs
-for i in range(1, randint(2,10)):
-	objects.append(GameObject(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, 'N', (randint(1,255),randint(1,255),randint(1,255))))
+for i in range(randint(1,10)):
+	objects.append(GameObject(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, 2, (randint(1,255),randint(1,255),randint(1,255))))
+
+#create up to ten items
+for i in range(randint(1,10)):
+    objects.append(GameObject(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, 256, (randint(1,255),randint(1,255),randint(1,255))))
  
 #generate map (at this point it's not drawn to the screen)
 make_map()
