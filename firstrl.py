@@ -54,8 +54,13 @@ class GameObject:
 		#erase the character that represents this object
 		con.draw_char(self.x, self.y, ' ', self.color, bg=None)
 
+	def get_info(self):
+		return {'temperature': self.temperature, 'burn_temperature': self.burn_temperature }
+
+
 class ObjectBag(list):
 	def __init__(self):
+		self.player = None
 		self.characters = []
 		self.items = []
  
@@ -83,7 +88,7 @@ class Character(GameObject):
 
 class Player(Character):
 	#any npc and it properties
-	def __init__(self, x, y, char = '@', color=color_white):
+	def __init__(self, x, y, char = '@', color = color_white):
 		super().__init__(x, y, char, color)
 
 class Npc(Character):
@@ -196,14 +201,21 @@ def make_map():
 			rooms.append(new_room)
 			num_rooms += 1
 
-# def spawn_npc():
+def draw_player():
+	print(objects.player.get_info())
+	objects.player.draw()
 
+def draw_npcs():
+	#draw all characters in the list
+	for characters in objects.characters:
+		characters.draw()
 
-# def spawn_items():
-
+def draw_items():
+	#draw all item in the list
+	for item in objects.items:
+		item.draw()
  
 def render_all():
- 
 	#go through all tiles, and set their background color
 	for y in range(MAP_HEIGHT):
 		for x in range(MAP_WIDTH):
@@ -213,13 +225,11 @@ def render_all():
 			else:
 				con.draw_char(x, y, '.', fg=color_wall_foreground, bg=color_floor_background)
  
-	#draw all objects in the list
-	print(objects)
-	for obj in objects:
-		print(obj)
-		obj.characters.draw()
-		obj.items.draw()
- 
+	#draw all items in the list (draw player last to draw him on top layer)
+	draw_npcs()
+	draw_items()
+	draw_player()
+
 	#blit the contents of "con" to the root console and present it
 	root.blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0)
  
@@ -283,7 +293,7 @@ player = Player(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
 
 #the list of objects with those two
 objects = ObjectBag()
-objects.characters.append(player)
+objects.player = player
 
 #create up to ten NPCs
 npc_num = randint(1,10)
@@ -310,7 +320,6 @@ while not tdl.event.is_window_closed():
  
 	#erase all objects at their old locations, before they move
 	for object in objects:
-		print(object)
 		object.clear()
  
 	#handle keys and exit game if needed
