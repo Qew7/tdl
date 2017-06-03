@@ -21,12 +21,46 @@ LIMIT_FPS = 20  #20 frames-per-second maximum
  
  
 color_dark_wall = 0x400040
-color_dark_ground = (50, 50, 150)
+color_dark_ground = 0x323296
 color_floor_background = 0x002809
 color_wall_foreground = 0x403000
+color_white = 0xFFFFFF
+
+class GameObject:
+	#this is a generic object: the player, a wall, a monster, an item, the stairs...
+	#it's always represented by a character on screen.
+
+	#temp is in celsium
+	temperature = 24
+	burn_temperature = 100
+
+	def __init__(self, x, y, char, color):
+		self.x = x
+		self.y = y
+		self.char = char
+		self.color = (randint(1,255),randint(1,255),randint(1,255))
+ 
+	def move(self, dx, dy):
+		#move by the given amount, if the destination is not blocked
+		if not my_map[self.x + dx][self.y + dy].blocked:
+			self.x += dx
+			self.y += dy
+ 
+	def draw(self):
+		#draw the character that represents this object at its position
+		con.draw_char(self.x, self.y, self.char, self.color, bg=None)
+ 
+	def clear(self):
+		#erase the character that represents this object
+		con.draw_char(self.x, self.y, ' ', self.color, bg=None)
+
+class ObjectBag(list):
+	def __init__(self):
+		self.characters = []
+		self.items = []
  
  
-class Tile:
+class Tile(GameObject):
 	#a tile of the map and its properties
 	def __init__(self, blocked, block_sight=None):
 		self.blocked = blocked
@@ -35,7 +69,29 @@ class Tile:
 		if block_sight is None: 
 			block_sight = blocked
 		self.block_sight = block_sight
- 
+
+class Item(GameObject):
+	#any item and it properties
+	def __init__(self, x, y, char, color=None, pickable=True):
+		super().__init__(x, y, char, color)
+		self.pickable = pickable
+
+class Character(GameObject):
+	#any npc and it properties
+	def __init__(self, x, y, char, color):
+		super().__init__(x, y, char, color)
+
+class Player(Character):
+	#any npc and it properties
+	def __init__(self, x, y, char = '@', color=color_white):
+		super().__init__(x, y, char, color)
+
+class Npc(Character):
+	#any npc and it properties
+	def __init__(self, x, y, char=2, color=None, hostile=False):
+		super().__init__(x, y, char, color)
+		self.hostile = hostile
+
 class Rect:
 	#a rectangle on the map. used to characterize a room.
 	def __init__(self, x, y, w, h):
@@ -53,29 +109,6 @@ class Rect:
 		#returns true if this rectangle intersects with another one
 		return (self.x1 <= other.x2 and self.x2 >= other.x1 and
 				self.y1 <= other.y2 and self.y2 >= other.y1)
- 
-class GameObject:
-	#this is a generic object: the player, a monster, an item, the stairs...
-	#it's always represented by a character on screen.
-	def __init__(self, x, y, char, color):
-		self.x = x
-		self.y = y
-		self.char = char
-		self.color = color
- 
-	def move(self, dx, dy):
-		#move by the given amount, if the destination is not blocked
-		if not my_map[self.x + dx][self.y + dy].blocked:
-			self.x += dx
-			self.y += dy
- 
-	def draw(self):
-		#draw the character that represents this object at its position
-		con.draw_char(self.x, self.y, self.char, self.color, bg=None)
- 
-	def clear(self):
-		#erase the character that represents this object
-		con.draw_char(self.x, self.y, ' ', self.color, bg=None)
  
  
 def create_room(room):
@@ -144,13 +177,7 @@ def make_map():
  
 			else:
 				#all rooms after the first:
-				#connect it to the previous room with a tunnel
-
-				#spawn npc in center of new room
-				if r < len(objects):
-					print('room #' + str(num_rooms))
-					objects[r].x = new_x
-					objects[r].y = new_y
+				#connect it to the previous room with a tunnel    
  
 				#center coordinates of previous room
 				(prev_x, prev_y) = rooms[num_rooms-1].center()
@@ -168,7 +195,12 @@ def make_map():
 			#finally, append the new room to the list
 			rooms.append(new_room)
 			num_rooms += 1
- 
+
+# def spawn_npc():
+
+
+# def spawn_items():
+
  
 def render_all():
  
@@ -182,8 +214,11 @@ def render_all():
 				con.draw_char(x, y, '.', fg=color_wall_foreground, bg=color_floor_background)
  
 	#draw all objects in the list
+	print(objects)
 	for obj in objects:
-		obj.draw()
+		print(obj)
+		obj.characters.draw()
+		obj.items.draw()
  
 	#blit the contents of "con" to the root console and present it
 	root.blit(con, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0)
@@ -244,18 +279,23 @@ tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(SCREEN_WIDTH, SCREEN_HEIGHT)
 
 #create object representing the player
-player = GameObject(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, '@', (255,255,255))
+player = Player(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
 
 #the list of objects with those two
-objects = [player]
+objects = ObjectBag()
+objects.characters.append(player)
 
 #create up to ten NPCs
-for i in range(randint(1,10)):
-	objects.append(GameObject(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, 2, (randint(1,255),randint(1,255),randint(1,255))))
+npc_num = randint(1,10)
+print('npc count: '+ str(npc_num))
+for i in range(npc_num):
+	objects.characters.append(Npc(SCREEN_WIDTH//2 - i, SCREEN_HEIGHT//2))
 
 #create up to ten items
-for i in range(randint(1,10)):
-    objects.append(GameObject(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, 256, (randint(1,255),randint(1,255),randint(1,255))))
+item_num = randint(1,10)
+print('item count: '+ str(item_num))
+for i in range(item_num):
+	objects.items.append(Item(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 - i, 256))
  
 #generate map (at this point it's not drawn to the screen)
 make_map()
@@ -270,6 +310,7 @@ while not tdl.event.is_window_closed():
  
 	#erase all objects at their old locations, before they move
 	for object in objects:
+		print(object)
 		object.clear()
  
 	#handle keys and exit game if needed
