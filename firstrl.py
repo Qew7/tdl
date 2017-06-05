@@ -19,12 +19,14 @@ MAX_ROOMS = 20
 REALTIME = False
 LIMIT_FPS = 20  #20 frames-per-second maximum
  
- 
 color_dark_wall = 0x400040
 color_dark_ground = 0x323296
 color_floor_background = 0x002809
 color_wall_foreground = 0x403000
 color_white = 0xFFFFFF
+
+def get_random_color():
+	color_random = (randint(1,255),randint(1,255),randint(1,255))
 
 class GameObject:
 	#this is a generic object: the player, a wall, a monster, an item, the stairs...
@@ -38,7 +40,7 @@ class GameObject:
 		self.x = x
 		self.y = y
 		self.char = char
-		self.color = (randint(1,255),randint(1,255),randint(1,255))
+		self.color = color
  
 	def move(self, dx, dy):
 		#move by the given amount, if the destination is not blocked
@@ -77,7 +79,7 @@ class Tile(GameObject):
 
 class Item(GameObject):
 	#any item and it properties
-	def __init__(self, x, y, char, color=None, pickable=True):
+	def __init__(self, x, y, char, color=(randint(1,255),randint(1,255),randint(1,255)), pickable=True):
 		super().__init__(x, y, char, color)
 		self.pickable = pickable
 
@@ -93,7 +95,7 @@ class Player(Character):
 
 class Npc(Character):
 	#any npc and it properties
-	def __init__(self, x, y, char=2, color=None, hostile=False):
+	def __init__(self, x, y, char=2, color=(randint(1,255),randint(1,255),randint(1,255)), hostile=False):
 		super().__init__(x, y, char, color)
 		self.hostile = hostile
 
