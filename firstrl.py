@@ -35,6 +35,7 @@ class GameObject:
 	#temp is in celsium
 	temperature = 24
 	burn_temperature = 100
+	health = 100
 
 	def __init__(self, x, y, char, color):
 		self.x = x
@@ -57,7 +58,7 @@ class GameObject:
 		con.draw_char(self.x, self.y, ' ', self.color, bg=None)
 
 	def get_info(self):
-		return {'temperature': self.temperature, 'burn_temperature': self.burn_temperature }
+		return {'temperature': self.temperature, 'burn_temperature': self.burn_temperature, 'health': self.health }
 
 
 class ObjectBag(list):
